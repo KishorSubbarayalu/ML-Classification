@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[325]:
+# In[1]:
 
 
 import pandas as pd
@@ -9,25 +9,25 @@ import numpy as np
 import os
 
 
-# In[326]:
+# In[2]:
 
 
 cwd = os.getcwd()
 
 
-# In[327]:
+# In[3]:
 
 
 ip_filepath = cwd+'\\WineQT.csv'
 
 
-# In[328]:
+# In[4]:
 
 
 wq_df = pd.read_csv(ip_filepath)
 
 
-# In[329]:
+# In[5]:
 
 
 print("Basic Profiling for the dataframe: ")
@@ -37,7 +37,7 @@ print("Number of records: ",wq_df.shape[0])
 print("Size of the dataframe: ",wq_df.size,'')
 
 
-# In[330]:
+# In[6]:
 
 
 print("Detailed Statistics: ")
@@ -45,7 +45,7 @@ print("----------------------------------")
 print(wq_df.describe())
 
 
-# In[331]:
+# In[7]:
 
 
 print("Detailed Information: ")
@@ -53,14 +53,14 @@ print("----------------------------------")
 print(wq_df.info())
 
 
-# In[332]:
+# In[8]:
 
 
 print("Checking Null Values: ")
 print(wq_df.isnull().sum())
 
 
-# In[333]:
+# In[9]:
 
 
 print(wq_df.dtypes.value_counts())
@@ -69,32 +69,32 @@ print("The dataframe has only numeric values")
 
 # ### EDA
 
-# In[334]:
+# In[10]:
 
 
 wq = wq_df.copy()
 
 
-# In[335]:
+# In[11]:
 
 
 wq.head()
 
 
-# In[336]:
+# In[12]:
 
 
 wq.drop('Id',axis=1, inplace=True)
 print("Dropped the Id column as it is an index column, and the df has already possess an index column")
 
 
-# In[337]:
+# In[13]:
 
 
 wq.head()
 
 
-# In[338]:
+# In[14]:
 
 
 import matplotlib.pyplot as plt
@@ -107,27 +107,27 @@ import seaborn as sb
 
 # #### Target Variable - Quality
 
-# In[339]:
+# In[15]:
 
 
 def configure_plots(chart,xlab,ylab,desc):
     chart.set(xlabel = xlab, ylabel = ylab, title = desc)
 
 
-# In[340]:
+# In[16]:
 
 
 chart = sb.countplot(x='quality',data=wq)
 configure_plots(chart,"WineQuality","Number of Wine Variaties","Frequency of wine variaties and its Quality")
 
 
-# In[342]:
+# In[17]:
 
 
 print(wq.columns)
 
 
-# In[343]:
+# In[18]:
 
 
 ## Renaming the colmumns :- Space removal and Title Case
@@ -138,20 +138,20 @@ def title_name(df):
     return df.columns.str.title()
 
 
-# In[344]:
+# In[19]:
 
 
 wq.columns = replace_spaces(wq)
 wq.columns = title_name(wq)
 
 
-# In[345]:
+# In[20]:
 
 
 print(wq.columns)
 
 
-# In[346]:
+# In[21]:
 
 
 def feat_analysis(feature):
@@ -172,7 +172,7 @@ def feat_analysis(feature):
     plt.show()
 
 
-# In[347]:
+# In[22]:
 
 
 import warnings
@@ -188,7 +188,7 @@ for i in wq.columns[:11]:
 
 # ### Co-Relation between all the predictors vs target variable:
 
-# In[348]:
+# In[23]:
 
 
 plt.figure(figsize=(10,6))
@@ -196,13 +196,13 @@ sb.heatmap(wq.corr(),cmap="viridis", annot=True)
 plt.show()
 
 
-# In[349]:
+# In[24]:
 
 
 print(wq.columns)
 
 
-# In[350]:
+# In[25]:
 
 
 from sklearn.model_selection import train_test_split
@@ -210,13 +210,13 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
 
-# In[351]:
+# In[26]:
 
 
 target = wq.loc[:,'Quality']
 
 
-# In[352]:
+# In[27]:
 
 
 predictors = wq.loc[:, wq.columns != 'Quality']
@@ -224,13 +224,13 @@ predictors = wq.loc[:, wq.columns != 'Quality']
 
 # ### Splitting the data into train set and test set
 
-# In[353]:
+# In[28]:
 
 
 f_train, f_test, t_train, t_test = train_test_split(predictors, target, test_size = 0.3, random_state = 101)
 
 
-# In[354]:
+# In[29]:
 
 
 print(f'Shape of the f_train: {f_train.shape}')
@@ -241,26 +241,26 @@ print(f'Shape of the t_test: {t_test.shape}')
 
 # ### Decision Tree Classifier
 
-# In[355]:
+# In[30]:
 
 
 dtc = DecisionTreeClassifier()
 dtc_mod = dtc.fit(f_train, t_train)
 
 
-# In[356]:
+# In[31]:
 
 
 dtc_pred = dtc_mod.predict(f_test)
 
 
-# In[357]:
+# In[32]:
 
 
 print("Confusion Matrix of the Decision Tree Model: \n {}".format(confusion_matrix(t_test, dtc_pred)))
 
 
-# In[358]:
+# In[33]:
 
 
 print("Accuracy score of the Decision Tree Model: \n{} %".format(round(accuracy_score(t_test, dtc_pred)*100,2)))
@@ -268,13 +268,13 @@ print("Accuracy score of the Decision Tree Model: \n{} %".format(round(accuracy_
 
 # ### Increased the size of train data, the model performed well
 
-# In[359]:
+# In[34]:
 
 
 f_train, f_test, t_train, t_test = train_test_split(predictors, target, test_size = 0.2, random_state = 101)
 
 
-# In[360]:
+# In[35]:
 
 
 dtc = DecisionTreeClassifier()
@@ -282,7 +282,7 @@ dtc_mod = dtc.fit(f_train, t_train)
 dtc_pred = dtc_mod.predict(f_test)
 
 
-# In[361]:
+# In[36]:
 
 
 print("Confusion Matrix of the Decision Tree Model: \n {}".format(confusion_matrix(t_test, dtc_pred)))
@@ -291,44 +291,44 @@ print("Accuracy score of the Decision Tree Model: \n{} %".format(round(accuracy_
 
 # ### Standardize and fiting the model
 
-# In[362]:
+# In[37]:
 
 
 from sklearn.preprocessing import StandardScaler
 
 
-# In[363]:
+# In[38]:
 
 
 scaler = StandardScaler()
 
 
-# In[364]:
+# In[39]:
 
 
 f_train, f_test, t_train, t_test = train_test_split(predictors, target, test_size = 0.3, random_state = 101)
 
 
-# In[365]:
+# In[40]:
 
 
 scaler.fit(f_train)
 
 
-# In[366]:
+# In[41]:
 
 
 print("Before Standardizing: \n {} ".format(f_train.head()))
 
 
-# In[367]:
+# In[42]:
 
 
 f_train=(scaler.transform(f_train))
 print("After Standardizing: \n {} ".format(f_train))
 
 
-# In[368]:
+# In[43]:
 
 
 # Similarly, modify the scales in test dataset
@@ -336,7 +336,7 @@ scaler.fit(f_test)
 f_test=(scaler.transform(f_test))
 
 
-# In[369]:
+# In[44]:
 
 
 # Fit the model
@@ -344,21 +344,21 @@ dtc = DecisionTreeClassifier()
 dtc_mod = dtc.fit(f_train, t_train)
 
 
-# In[370]:
+# In[45]:
 
 
 # Predict the wine quality
 dtc_pred = dtc_mod.predict(f_test)
 
 
-# In[371]:
+# In[46]:
 
 
 print("Confusion Matrix of the Decision Tree Model: \n {}".format(confusion_matrix(t_test, dtc_pred)))
 print("Accuracy score of the Decision Tree Model: \n{} %".format(round(accuracy_score(t_test, dtc_pred)*100,2)))
 
 
-# In[372]:
+# In[47]:
 
 
 # Changed the train-test split size:
@@ -386,14 +386,14 @@ print("Accuracy score of the Decision Tree Model: \n{} %".format(round(accuracy_
 
 # ### Standardize Whole Predictors and then performing train-test split
 
-# In[373]:
+# In[48]:
 
 
 scaler.fit(predictors)
 predictors=(scaler.transform(predictors))
 
 
-# In[374]:
+# In[49]:
 
 
 f_train, f_test, t_train, t_test = train_test_split(predictors, target, test_size = 0.3, random_state = 101)
@@ -409,7 +409,7 @@ print("Confusion Matrix of the Decision Tree Model: \n {}".format(confusion_matr
 print("Accuracy score of the Decision Tree Model: \n{} %".format(round(accuracy_score(t_test, dtc_pred)*100,2)))
 
 
-# In[375]:
+# In[50]:
 
 
 f_train, f_test, t_train, t_test = train_test_split(predictors, target, test_size = 0.2, random_state = 101)
@@ -423,3 +423,128 @@ dtc_pred = dtc_mod.predict(f_test)
 # Model Evaluation using confusion Matrix and Accuracy Score
 print("Confusion Matrix of the Decision Tree Model: \n {}".format(confusion_matrix(t_test, dtc_pred)))
 print("Accuracy score of the Decision Tree Model: \n{} %".format(round(accuracy_score(t_test, dtc_pred)*100,2)))
+
+
+# In[51]:
+
+
+from sklearn.tree import plot_tree
+
+
+# In[52]:
+
+
+plot_tree(dtc)
+
+
+# #### Tuning the model for better performance
+
+# In[53]:
+
+
+
+dtc = DecisionTreeClassifier(min_samples_leaf = 5)
+dtc_mod = dtc.fit(f_train, t_train)
+
+# Prediction
+dtc_pred = dtc_mod.predict(f_test)
+
+# Model Evaluation using confusion Matrix and Accuracy Score
+print("Confusion Matrix of the Decision Tree Model: \n {}".format(confusion_matrix(t_test, dtc_pred)))
+print("Accuracy score of the Decision Tree Model: \n{} %".format(round(accuracy_score(t_test, dtc_pred)*100,2)))
+
+
+# In[54]:
+
+
+plt.figure(figsize=(15,12))
+plot_tree(dtc, filled=True)
+plt.show()
+
+
+# In[59]:
+
+
+from sklearn.metrics import roc_curve, auc, roc_auc_score
+from sklearn.preprocessing import label_binarize
+
+
+# In[61]:
+
+
+target_bin = label_binarize(target, classes=[3, 4, 5, 6, 7, 8])
+n_classes = target_bin.shape[1]
+
+
+# In[62]:
+
+
+
+# shuffle and split training and test sets
+f_train, f_test, t_train, t_test = train_test_split(predictors, target_bin, test_size = 0.2, random_state = 101)
+
+dtc = DecisionTreeClassifier(min_samples_leaf = 5)
+dtc_mod = dtc.fit(f_train, t_train)
+
+# Prediction
+dtc_pred = dtc_mod.predict(f_test)
+
+# Compute ROC curve and ROC area for each class
+fpr = dict()
+tpr = dict()
+roc_auc = dict()
+for i in range(n_classes):
+    fpr[i], tpr[i], _ = roc_curve(t_test[:, i], dtc_pred[:, i])
+    roc_auc[i] = auc(fpr[i], tpr[i])
+
+# Compute micro-average ROC curve and ROC area
+fpr["micro"], tpr["micro"], _ = roc_curve(t_test.ravel(), dtc_pred.ravel())
+roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
+
+
+# In[74]:
+
+
+# First aggregate all false positive rates
+all_fpr = np.unique(np.concatenate([fpr[i] for i in range(n_classes)]))
+
+# Then interpolate all ROC curves at this points
+mean_tpr = np.zeros_like(all_fpr)
+for i in range(n_classes):
+    mean_tpr += np.interp(all_fpr, fpr[i], tpr[i])
+
+# Finally average it and compute AUC
+mean_tpr /= n_classes
+
+fpr["macro"] = all_fpr
+tpr["macro"] = mean_tpr
+roc_auc["macro"] = auc(fpr["macro"], tpr["macro"])
+
+# Plot all ROC curves
+plt.figure(figsize=(10,5))
+
+colors = cycle(["aqua", "darkorange", "cornflowerblue", "red", "blue", "green"])
+for i, color in zip(range(n_classes), colors):
+    plt.plot(
+        fpr[i],
+        tpr[i],
+        color=color,
+        lw=lw,
+        label="ROC curve of class {0} (area = {1:0.2f})".format(i, roc_auc[i]),
+    )
+
+plt.plot([0, 1], [0, 1],"k--", lw=2)
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.title("Receiver operating characteristics")
+plt.legend(loc="lower right")
+plt.show()
+
+
+# In[ ]:
+
+
+
+
