@@ -462,89 +462,60 @@ plot_tree(dtc, filled=True)
 plt.show()
 
 
-# In[59]:
+# #### Let's transform the quality into binary values.
+# 
+# ##### 1. The wine quality with 3,4,5 shall be 'BAD' with value 0
+# ##### 2. The wine quality with 6,7,8 shall be 'GOOD' with value 1
+
+# In[92]:
 
 
-from sklearn.metrics import roc_curve, auc, roc_auc_score
-from sklearn.preprocessing import label_binarize
+target_binary = target.apply(lambda x: 1 if x>= 6 else 0)
 
 
-# In[61]:
+# In[93]:
 
 
-target_bin = label_binarize(target, classes=[3, 4, 5, 6, 7, 8])
-n_classes = target_bin.shape[1]
+print(target_binary.value_counts())
 
 
-# In[62]:
+# ### Let's Build the model again
+
+# In[94]:
 
 
+f_train, f_test, t_train, t_test = train_test_split(predictors, target_binary, test_size = 0.2, random_state = 101)
 
-# shuffle and split training and test sets
-f_train, f_test, t_train, t_test = train_test_split(predictors, target_bin, test_size = 0.2, random_state = 101)
-
-dtc = DecisionTreeClassifier(min_samples_leaf = 5)
+dtc = DecisionTreeClassifier(min_samples_leaf = 2)
 dtc_mod = dtc.fit(f_train, t_train)
+
+
+# In[95]:
+
 
 # Prediction
 dtc_pred = dtc_mod.predict(f_test)
 
-# Compute ROC curve and ROC area for each class
-fpr = dict()
-tpr = dict()
-roc_auc = dict()
-for i in range(n_classes):
-    fpr[i], tpr[i], _ = roc_curve(t_test[:, i], dtc_pred[:, i])
-    roc_auc[i] = auc(fpr[i], tpr[i])
 
-# Compute micro-average ROC curve and ROC area
-fpr["micro"], tpr["micro"], _ = roc_curve(t_test.ravel(), dtc_pred.ravel())
-roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
+# In[96]:
 
 
-# In[74]:
+# Model Evaluation using confusion Matrix and Accuracy Score
+print("Confusion Matrix of the Decision Tree Model: \n {}".format(confusion_matrix(t_test, dtc_pred)))
+print("Accuracy score of the Decision Tree Model: \n{} %".format(round(accuracy_score(t_test, dtc_pred)*100,2)))
 
 
-# First aggregate all false positive rates
-all_fpr = np.unique(np.concatenate([fpr[i] for i in range(n_classes)]))
+# #### Get classification Report for Decsion Tree Classifier 
 
-# Then interpolate all ROC curves at this points
-mean_tpr = np.zeros_like(all_fpr)
-for i in range(n_classes):
-    mean_tpr += np.interp(all_fpr, fpr[i], tpr[i])
-
-# Finally average it and compute AUC
-mean_tpr /= n_classes
-
-fpr["macro"] = all_fpr
-tpr["macro"] = mean_tpr
-roc_auc["macro"] = auc(fpr["macro"], tpr["macro"])
-
-# Plot all ROC curves
-plt.figure(figsize=(10,5))
-
-colors = cycle(["aqua", "darkorange", "cornflowerblue", "red", "blue", "green"])
-for i, color in zip(range(n_classes), colors):
-    plt.plot(
-        fpr[i],
-        tpr[i],
-        color=color,
-        lw=lw,
-        label="ROC curve of class {0} (area = {1:0.2f})".format(i, roc_auc[i]),
-    )
-
-plt.plot([0, 1], [0, 1],"k--", lw=2)
-plt.xlim([0.0, 1.0])
-plt.ylim([0.0, 1.05])
-plt.xlabel("False Positive Rate")
-plt.ylabel("True Positive Rate")
-plt.title("Receiver operating characteristics")
-plt.legend(loc="lower right")
-plt.show()
+# In[103]:
 
 
-# In[ ]:
+from sklearn.metrics import classification_report
 
 
+# In[104]:
 
+
+target_names = ['BAD', 'GOOD']
+print(classification_report(t_test, dtc_pred, target_names=target_names))
 
