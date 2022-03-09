@@ -7,6 +7,15 @@
 import pandas as pd
 import numpy as np
 import os
+import warnings
+
+import matplotlib.pyplot as plt
+import seaborn as sb
+
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, classification_report
+from sklearn.tree import plot_tree
 
 
 # In[2]:
@@ -94,40 +103,33 @@ print("Dropped the Id column as it is an index column, and the df has already po
 wq.head()
 
 
-# In[14]:
-
-
-import matplotlib.pyplot as plt
-import seaborn as sb
-
-
 # #### The target variable is quality and all others are predictors
 
 # ### Univariate Analysis:
 
 # #### Target Variable - Quality
 
-# In[15]:
+# In[14]:
 
 
 def configure_plots(chart,xlab,ylab,desc):
     chart.set(xlabel = xlab, ylabel = ylab, title = desc)
 
 
-# In[16]:
+# In[15]:
 
 
 chart = sb.countplot(x='quality',data=wq)
 configure_plots(chart,"WineQuality","Number of Wine Variaties","Frequency of wine variaties and its Quality")
 
 
-# In[17]:
+# In[16]:
 
 
 print(wq.columns)
 
 
-# In[18]:
+# In[17]:
 
 
 ## Renaming the colmumns :- Space removal and Title Case
@@ -138,20 +140,20 @@ def title_name(df):
     return df.columns.str.title()
 
 
-# In[19]:
+# In[18]:
 
 
 wq.columns = replace_spaces(wq)
 wq.columns = title_name(wq)
 
 
-# In[20]:
+# In[19]:
 
 
 print(wq.columns)
 
 
-# In[21]:
+# In[20]:
 
 
 def feat_analysis(feature):
@@ -172,10 +174,9 @@ def feat_analysis(feature):
     plt.show()
 
 
-# In[22]:
+# In[21]:
 
 
-import warnings
 warnings.filterwarnings("ignore")
 
 for i in wq.columns[:11]:
@@ -188,7 +189,7 @@ for i in wq.columns[:11]:
 
 # ### Co-Relation between all the predictors vs target variable:
 
-# In[23]:
+# In[22]:
 
 
 plt.figure(figsize=(10,6))
@@ -196,27 +197,13 @@ sb.heatmap(wq.corr(),cmap="viridis", annot=True)
 plt.show()
 
 
-# In[24]:
-
-
-print(wq.columns)
-
-
-# In[25]:
-
-
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
-
-
-# In[26]:
+# In[23]:
 
 
 target = wq.loc[:,'Quality']
 
 
-# In[27]:
+# In[24]:
 
 
 predictors = wq.loc[:, wq.columns != 'Quality']
@@ -224,13 +211,13 @@ predictors = wq.loc[:, wq.columns != 'Quality']
 
 # ### Splitting the data into train set and test set
 
-# In[28]:
+# In[25]:
 
 
 f_train, f_test, t_train, t_test = train_test_split(predictors, target, test_size = 0.3, random_state = 101)
 
 
-# In[29]:
+# In[26]:
 
 
 print(f'Shape of the f_train: {f_train.shape}')
@@ -241,205 +228,67 @@ print(f'Shape of the t_test: {t_test.shape}')
 
 # ### Decision Tree Classifier
 
-# In[30]:
+# In[27]:
 
 
 dtc = DecisionTreeClassifier()
 dtc_mod = dtc.fit(f_train, t_train)
 
 
-# In[31]:
+# In[28]:
 
 
 dtc_pred = dtc_mod.predict(f_test)
+
+
+# In[29]:
+
+
+print("Confusion Matrix of the Decision Tree Model: \n {}".format(confusion_matrix(t_test, dtc_pred)))
+
+
+# In[30]:
+
+
+print("Accuracy score of the Decision Tree Model: \n{} %".format(round(accuracy_score(t_test, dtc_pred)*100,2)))
+
+
+# ### Increased the size of train data
+
+# In[31]:
+
+
+f_train, f_test, t_train, t_test = train_test_split(predictors, target, test_size = 0.2, random_state = 101)
 
 
 # In[32]:
 
 
-print("Confusion Matrix of the Decision Tree Model: \n {}".format(confusion_matrix(t_test, dtc_pred)))
+dtc = DecisionTreeClassifier()
+dtc_mod = dtc.fit(f_train, t_train)
+dtc_pred = dtc_mod.predict(f_test)
 
 
 # In[33]:
 
 
+print("Confusion Matrix of the Decision Tree Model: \n {}".format(confusion_matrix(t_test, dtc_pred)))
 print("Accuracy score of the Decision Tree Model: \n{} %".format(round(accuracy_score(t_test, dtc_pred)*100,2)))
 
 
-# ### Increased the size of train data, the model performed well
+# #### The model performed well, Increase in accuracy score
 
 # In[34]:
 
 
-f_train, f_test, t_train, t_test = train_test_split(predictors, target, test_size = 0.2, random_state = 101)
-
-
-# In[35]:
-
-
-dtc = DecisionTreeClassifier()
-dtc_mod = dtc.fit(f_train, t_train)
-dtc_pred = dtc_mod.predict(f_test)
-
-
-# In[36]:
-
-
-print("Confusion Matrix of the Decision Tree Model: \n {}".format(confusion_matrix(t_test, dtc_pred)))
-print("Accuracy score of the Decision Tree Model: \n{} %".format(round(accuracy_score(t_test, dtc_pred)*100,2)))
-
-
-# ### Standardize and fiting the model
-
-# In[37]:
-
-
-from sklearn.preprocessing import StandardScaler
-
-
-# In[38]:
-
-
-scaler = StandardScaler()
-
-
-# In[39]:
-
-
-f_train, f_test, t_train, t_test = train_test_split(predictors, target, test_size = 0.3, random_state = 101)
-
-
-# In[40]:
-
-
-scaler.fit(f_train)
-
-
-# In[41]:
-
-
-print("Before Standardizing: \n {} ".format(f_train.head()))
-
-
-# In[42]:
-
-
-f_train=(scaler.transform(f_train))
-print("After Standardizing: \n {} ".format(f_train))
-
-
-# In[43]:
-
-
-# Similarly, modify the scales in test dataset
-scaler.fit(f_test)
-f_test=(scaler.transform(f_test))
-
-
-# In[44]:
-
-
-# Fit the model
-dtc = DecisionTreeClassifier()
-dtc_mod = dtc.fit(f_train, t_train)
-
-
-# In[45]:
-
-
-# Predict the wine quality
-dtc_pred = dtc_mod.predict(f_test)
-
-
-# In[46]:
-
-
-print("Confusion Matrix of the Decision Tree Model: \n {}".format(confusion_matrix(t_test, dtc_pred)))
-print("Accuracy score of the Decision Tree Model: \n{} %".format(round(accuracy_score(t_test, dtc_pred)*100,2)))
-
-
-# In[47]:
-
-
-# Changed the train-test split size:
-f_train, f_test, t_train, t_test = train_test_split(predictors, target, test_size = 0.2, random_state = 101)
-
-# Standardize the train data
-scaler.fit(f_train)
-f_train=(scaler.transform(f_train))
-
-# Standardize the test data
-scaler.fit(f_test)
-f_test=(scaler.transform(f_test))
-
-# Fitting the model
-dtc = DecisionTreeClassifier()
-dtc_mod = dtc.fit(f_train, t_train)
-
-# Prediction
-dtc_pred = dtc_mod.predict(f_test)
-
-# Model Evaluation using confusion Matrix and Accuracy Score
-print("Confusion Matrix of the Decision Tree Model: \n {}".format(confusion_matrix(t_test, dtc_pred)))
-print("Accuracy score of the Decision Tree Model: \n{} %".format(round(accuracy_score(t_test, dtc_pred)*100,2)))
-
-
-# ### Standardize Whole Predictors and then performing train-test split
-
-# In[48]:
-
-
-scaler.fit(predictors)
-predictors=(scaler.transform(predictors))
-
-
-# In[49]:
-
-
-f_train, f_test, t_train, t_test = train_test_split(predictors, target, test_size = 0.3, random_state = 101)
-
-dtc = DecisionTreeClassifier()
-dtc_mod = dtc.fit(f_train, t_train)
-
-# Prediction
-dtc_pred = dtc_mod.predict(f_test)
-
-# Model Evaluation using confusion Matrix and Accuracy Score
-print("Confusion Matrix of the Decision Tree Model: \n {}".format(confusion_matrix(t_test, dtc_pred)))
-print("Accuracy score of the Decision Tree Model: \n{} %".format(round(accuracy_score(t_test, dtc_pred)*100,2)))
-
-
-# In[50]:
-
-
-f_train, f_test, t_train, t_test = train_test_split(predictors, target, test_size = 0.2, random_state = 101)
-
-dtc = DecisionTreeClassifier()
-dtc_mod = dtc.fit(f_train, t_train)
-
-# Prediction
-dtc_pred = dtc_mod.predict(f_test)
-
-# Model Evaluation using confusion Matrix and Accuracy Score
-print("Confusion Matrix of the Decision Tree Model: \n {}".format(confusion_matrix(t_test, dtc_pred)))
-print("Accuracy score of the Decision Tree Model: \n{} %".format(round(accuracy_score(t_test, dtc_pred)*100,2)))
-
-
-# In[51]:
-
-
-from sklearn.tree import plot_tree
-
-
-# In[52]:
-
-
-plot_tree(dtc)
+plt.figure(figsize=(15,12))
+plot_tree(dtc, filled=True)
+plt.show()
 
 
 # #### Tuning the model for better performance
 
-# In[53]:
+# In[35]:
 
 
 
@@ -454,7 +303,66 @@ print("Confusion Matrix of the Decision Tree Model: \n {}".format(confusion_matr
 print("Accuracy score of the Decision Tree Model: \n{} %".format(round(accuracy_score(t_test, dtc_pred)*100,2)))
 
 
-# In[54]:
+# In[36]:
+
+
+plt.figure(figsize=(15,12))
+plot_tree(dtc, filled=True)
+plt.show()
+
+
+# ### Hyperparameter tuning for multi class classification
+
+# In[37]:
+
+
+dtc = DecisionTreeClassifier(random_state=101)
+
+
+# In[38]:
+
+
+params = {
+    'max_depth': [2, 3, 5, 10, 20],
+    'min_samples_leaf': [5, 10, 20, 50, 100]
+}
+
+
+# In[39]:
+
+
+grid_search = GridSearchCV(estimator=dtc, 
+                           param_grid=params, 
+                           cv=4, n_jobs=-1, verbose=1, scoring = "accuracy")
+
+
+# In[40]:
+
+
+get_ipython().run_cell_magic('time', '', 'grid_search.fit(f_train, t_train)')
+
+
+# In[41]:
+
+
+grid_search.best_estimator_
+
+
+# In[42]:
+
+
+dtc = DecisionTreeClassifier(max_depth=3, min_samples_leaf=50, random_state=101)
+dtc_mod = dtc.fit(f_train, t_train)
+
+# Prediction
+dtc_pred = dtc_mod.predict(f_test)
+
+# Model Evaluation using confusion Matrix and Accuracy Score
+print("Confusion Matrix of the Decision Tree Model: \n {}".format(confusion_matrix(t_test, dtc_pred)))
+print("Accuracy score of the Decision Tree Model: \n{} %".format(round(accuracy_score(t_test, dtc_pred)*100,2)))
+
+
+# In[43]:
 
 
 plt.figure(figsize=(15,12))
@@ -467,13 +375,13 @@ plt.show()
 # ##### 1. The wine quality with 3,4,5 shall be 'BAD' with value 0
 # ##### 2. The wine quality with 6,7,8 shall be 'GOOD' with value 1
 
-# In[92]:
+# In[44]:
 
 
 target_binary = target.apply(lambda x: 1 if x>= 6 else 0)
 
 
-# In[93]:
+# In[45]:
 
 
 print(target_binary.value_counts())
@@ -481,7 +389,7 @@ print(target_binary.value_counts())
 
 # ### Let's Build the model again
 
-# In[94]:
+# In[46]:
 
 
 f_train, f_test, t_train, t_test = train_test_split(predictors, target_binary, test_size = 0.2, random_state = 101)
@@ -490,14 +398,14 @@ dtc = DecisionTreeClassifier(min_samples_leaf = 2)
 dtc_mod = dtc.fit(f_train, t_train)
 
 
-# In[95]:
+# In[47]:
 
 
 # Prediction
 dtc_pred = dtc_mod.predict(f_test)
 
 
-# In[96]:
+# In[48]:
 
 
 # Model Evaluation using confusion Matrix and Accuracy Score
@@ -507,15 +415,73 @@ print("Accuracy score of the Decision Tree Model: \n{} %".format(round(accuracy_
 
 # #### Get classification Report for Decsion Tree Classifier 
 
-# In[103]:
-
-
-from sklearn.metrics import classification_report
-
-
-# In[104]:
+# In[49]:
 
 
 target_names = ['BAD', 'GOOD']
 print(classification_report(t_test, dtc_pred, target_names=target_names))
+
+
+# ### Hyperparameter Tuning
+
+# In[50]:
+
+
+dtc = DecisionTreeClassifier(random_state=101)
+
+
+# In[51]:
+
+
+params = {
+    'max_depth': [2, 3, 5, 10, 20],
+    'min_samples_leaf': [5, 10, 20, 50, 100],
+    'criterion': ["gini", "entropy"]
+}
+
+
+# In[52]:
+
+
+grid_search = GridSearchCV(estimator=dtc, 
+                           param_grid=params, 
+                           cv=4, n_jobs=-1, verbose=1, scoring = "accuracy")
+
+
+# In[53]:
+
+
+get_ipython().run_cell_magic('time', '', 'grid_search.fit(f_train, t_train)')
+
+
+# In[54]:
+
+
+grid_search.best_estimator_
+
+
+# In[55]:
+
+
+
+dtc = DecisionTreeClassifier(criterion='entropy', max_depth=10, min_samples_leaf=10,
+                       random_state=101)
+dtc_mod = dtc.fit(f_train, t_train)
+
+# Prediction
+dtc_pred = dtc_mod.predict(f_test)
+
+# Model Evaluation using confusion Matrix and Accuracy Score
+print("Confusion Matrix of the Decision Tree Model: \n {}".format(confusion_matrix(t_test, dtc_pred)))
+print("Accuracy score of the Decision Tree Model: \n{} %".format(round(accuracy_score(t_test, dtc_pred)*100,2)))
+
+
+# #### After hyperparameter tuning the model performed well
+
+# In[56]:
+
+
+plt.figure(figsize=(10,10))
+plot_tree(dtc, filled=True)
+plt.show()
 
