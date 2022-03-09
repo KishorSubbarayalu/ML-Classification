@@ -4,6 +4,7 @@ Data Set : Wine Quality
 Data Source :  Kaggle https://www.kaggle.com/yasserh/wine-quality-dataset
 
 Algorithms used:
+
 	1. Decision Tree Classifier
 		a. multi classification
 			base model - 65% accuracy
