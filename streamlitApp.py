@@ -25,7 +25,7 @@ wq.columns = title_name(wq)
 wq.Quality = wq.Quality.apply(lambda x: 1 if x>= 6 else 0)
 
 # Loading the model
-ip_modelpath = cwd+"\\RandomForestClassifier\\wineclassification.joblib"
+ip_modelpath = cwd+"/RandomForestClassifier/wineclassification.joblib"
 rfc = load(ip_modelpath)
 
 
