@@ -1,6 +1,7 @@
 import streamlit as st
 from joblib import load
 import pandas as pd
+import sklearn
 import os
 import time
 
