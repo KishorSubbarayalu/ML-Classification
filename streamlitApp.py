@@ -7,7 +7,7 @@ import time
 
 # Data Loading: 
 cwd = os.getcwd()
-ip_filepath = cwd+'\\WineQT.csv'
+ip_filepath = cwd+'/WineQT.csv'
 wq_df = pd.read_csv(ip_filepath)
 
 # Data Transformation:
