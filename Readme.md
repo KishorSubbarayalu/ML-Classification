@@ -18,3 +18,11 @@ Algorithms used:
 		b. binary classification
 			base model - 79.91% accuracy
 			hyperparameter tuned model - 80.35% accuracy
+			
+	3. Logistic Regression
+		a. binary classification
+			a1. Model trained on actual classifiers without any transformation or scaling - 78.60%
+			a2. Model trained on classifiers with scaling - 78.17%
+			a3. Model trained on transformed classifiers (square root) without scaling - 80.35%
+			a4. Model trained on transformed classifiers (square root) with scaling - 79.91%
+			a5. CV Model trained on transformed classifiers (square root) without scaling - 79.48%
